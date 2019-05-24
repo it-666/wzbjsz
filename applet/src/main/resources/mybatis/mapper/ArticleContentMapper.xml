@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wzb.applet.mapper.ArticleContentMapper">
+
+    <select id="listArticleContent" parameterType="java.lang.String" resultType="com.wzb.applet.model.ArticleContentModel">
+        SELECT A.id AS id,A.article_headline AS articleHeadline,A.article_content AS articleContent,B.lable_name AS lableName,A.`article_label_id` AS articleLabelId,
+        A.article_issue_time AS articleIssueTime,C.`user_nickname` AS issueNickname,A.issue_user_id AS issueUserId,A.read_number AS readNumber,
+        (SELECT COUNT(*) FROM technique.`user_collect_table` AS D WHERE D.article_id = A.ID) AS evaluateNumber
+        FROM technique.article_content_table AS A
+        LEFT JOIN technique.article_label_table AS B ON A.`article_label_id` = B.`id`
+        LEFT JOIN technique.`user_table` AS C ON A.`issue_user_id` = C.`id`
+        WHERE A.del_status = 0 and A.open_or = 0
+        <if test="queryContent != null and queryContent != ''">
+             AND (A.`article_headline` LIKE CONCAT('%',#{queryContent},'%') OR B.`lable_name` LIKE CONCAT('%',#{queryContent},'%'))
+        </if>
+        GROUP BY A.id
+    </select>
+
+    <select id="getArticle" parameterType="java.lang.Long" resultType="com.wzb.applet.model.ArticleContentModel">
+        SELECT A.id AS id,A.article_headline AS articleHeadline,A.article_content AS articleContent,B.lable_name AS lableName,A.`article_label_id` AS articleLabelId,
+        A.article_issue_time AS articleIssueTime,C.`user_nickname` AS issueNickname,A.issue_user_id AS issueUserId,A.read_number AS readNumber,
+        (SELECT COUNT(*) FROM technique.`user_collect_table` AS D WHERE D.article_id = A.ID) AS evaluateNumber
+        FROM technique.article_content_table AS A
+        LEFT JOIN technique.article_label_table AS B ON A.`article_label_id` = B.`id`
+        LEFT JOIN technique.`user_table` AS C ON A.`issue_user_id` = C.`id` where A.del_status = 0 and A.open_or = 0 and A.id=#{id}
+    </select>
+
+    <update id="updateArticleReadNumber">
+        update technique.article_content_table
+        set read_number = #{readNumber}
+        where id=#{id}
+    </update>
+</mapper>

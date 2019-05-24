@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wzb.applet.mapper.UserMapper">
+
+    <insert id="insertUser" parameterType="com.wzb.applet.model.UserRequestModel">
+        INSERT INTO technique.user_table(id,user_name,user_pass,user_nickname,register_time,user_phone,head_url)
+        VALUES(#{userDO.id},#{userDO.userName},#{userDO.userPass},#{userDO.userNickname},#{userDO.registerTime},#{userDO.userPhone},#{userDO.headUrl})
+    </insert>
+
+    <select id="getUserByUserNameAndUserPass" resultType="com.wzb.applet.model.UserModel">
+        select id id,user_name userName,user_nickname userNickname,login_time logonTime,register_time registerTime,
+        user_phone userPhone,head_url headUrl
+        from technique.user_table
+        where user_pass=#{userPass} AND (user_name=#{userName} OR user_phone=#{userPhone})
+    </select>
+
+    <select id="getArticle" parameterType="java.lang.Long" resultType="com.wzb.applet.model.ArticleContentModel">
+        SELECT A.id AS id,A.article_headline AS articleHeadline,A.article_content AS articleContent,B.lable_name AS lableName,A.`article_label_id` AS articleLabelId,
+        A.article_issue_time AS articleIssueTime,C.`user_nickname` AS issueNickname,A.issue_user_id AS issueUserId,A.read_number AS readNumber,
+        (SELECT COUNT(*) FROM technique.`user_collect_table` AS D WHERE D.article_id = A.ID) AS evaluateNumber
+        FROM technique.`user_collect_table` AS U
+        LEFT JOIN technique.article_content_table AS A ON U.`article_id` = A.`id`
+        LEFT JOIN technique.article_label_table AS B ON A.`article_label_id` = B.`id`
+        LEFT JOIN technique.`user_table` AS C ON A.`issue_user_id` = C.`id`
+        WHERE A.del_status = 0 AND A.open_or = 0 AND A.id=#{id} AND U.`user_id`=#{userId}
+    </select>
+
+    <update id="updateUserLoginTime">
+        update technique.user_table
+        set login_time = #{loginTime}
+        where id = #{id}
+    </update>
+
+</mapper>

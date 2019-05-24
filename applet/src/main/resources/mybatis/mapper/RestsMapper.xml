@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wzb.applet.mapper.RestsMapper">
+
+    <select id="getBusinessCooperation" resultType="com.wzb.applet.model.BusinessCooperationModel">
+        select id,content,issue_time
+        from technique.business_cooperation_table
+    </select>
+
+    <insert id="insertOpinionFeedback" parameterType="com.wzb.applet.bean.OpinionFeedbackDO">
+        INSERT INTO technique.opinion_feedback_table(id,user_id,content,issue_time)
+        VALUES(#{id},#{userId},#{content},#{issueTime})
+    </insert>
+</mapper>
